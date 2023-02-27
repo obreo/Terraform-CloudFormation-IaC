@@ -1,0 +1,42 @@
+Resources:    
+    MyVPC:
+      Type: 'AWS::EC2::VPC'
+      Properties:
+        CidrBlock: 10.0.0.0/16
+    SubnetOne:
+      Type: 'AWS::EC2::Subnet'
+      Properties:
+        CidrBlock: 10.0.1.0/24
+        VpcId: !Ref MyVPC
+    IGW:
+      Type: 'AWS::EC2::InternetGateway'
+      Properties: {}
+    RouteTable:
+      Type: 'AWS::EC2::RouteTable'
+      Properties:
+        VpcId: !Ref MyVPC
+    RouteTableAssociation:
+      Type: 'AWS::EC2::SubnetRouteTableAssociation'
+      Properties:
+        SubnetId: !Ref SubnetOne
+        RouteTableId: !Ref RouteTable
+    Instance:
+      Type: 'AWS::EC2::Instance'
+      Properties:
+        ImageId: ami-0b5eea76982371e91
+        InstanceType: t2.micro
+        KeyName: DevOps
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        SubnetId: !Ref SubnetOne
+    SecurityGroup:
+      Type: 'AWS::EC2::SecurityGroup'
+      Properties:
+        GroupDescription: SSH Group
+        GroupName: SG
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 22
+            ToPort: 22
+            CidrIp: 0.0.0.0/0
+        VpcId: !Ref MyVPC
